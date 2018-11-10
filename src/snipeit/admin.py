@@ -1,3 +1,6 @@
+import html
+import json
+
 from django.contrib import admin
 from django.conf import settings
 from django.http import HttpResponseRedirect
@@ -5,8 +8,23 @@ from django.urls import path
 from django.utils.html import mark_safe
 from django_classified.admin import ItemAdmin
 from django_classified.models import Item, Section, Area, Group
+from markdown import markdown
 
 from service.providers import snipeit
+
+
+def make_active(modeladmin, request, queryset):
+    queryset.update(is_active=True)
+
+
+make_active.short_description = 'Mark items as active'
+
+
+def make_inactive(modeladmin, request, queryset):
+    queryset.update(is_active=False)
+
+
+make_inactive.short_description = 'Mark items as inactive'
 
 
 class SnipeItItemAdmin(ItemAdmin):
@@ -22,6 +40,7 @@ class SnipeItItemAdmin(ItemAdmin):
         'posted',
         'updated'
     )
+    actions = [make_active, make_inactive]
 
     def asset(self, obj):
         if obj.slug.startswith('snipeit_asset_'):
@@ -51,13 +70,27 @@ class SnipeItItemAdmin(ItemAdmin):
         return snipeit_urls + urls
 
     def get_snipeit_asset_description(self, asset_data):
-        return (
-            'Manufacturer: {}  '
-            'Model: {}  '
-        ).format(
-            asset_data['manufacturer']['name'],
-            asset_data['model']['name']
+        markdown_text = ''
+        markdown_text += (
+            '#### **{}** {}\n'.format(
+                asset_data['manufacturer']['name'],
+                asset_data['model']['name']
+            )
         )
+
+        if asset_data['custom_fields']['HW Info']['value']:
+            hw_info = json.loads(
+                html.unescape(
+                    asset_data['custom_fields']['HW Info']['value']
+                )
+            )
+            for key, value in hw_info.items():
+                markdown_text += f'- {key}\n'
+                for item in value:
+                    if item:
+                        markdown_text += f'    - {item}\n'
+
+        return mark_safe(markdown(markdown_text))
 
     def get_item_title(self, asset_data):
         return '{} {}'.format(

@@ -1,13 +1,9 @@
 import json
-import logging
 from subprocess import run, PIPE
 import click
 
 from snipeit.client import SnipeItClient
 from snipeit.utils import SetEncoder
-
-
-logging.captureWarnings(True)
 
 
 HW_INFO_CLASSES = (

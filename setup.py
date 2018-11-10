@@ -14,7 +14,7 @@ setup(
     install_requires=[
         'django>=2.1.0,<2.2',
         'django-classified',
-        'requests==2.20.0',
+        'requests==2.20.1',
         'click==7.0'
     ],
     entry_points={
