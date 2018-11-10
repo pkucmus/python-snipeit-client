@@ -41,6 +41,9 @@ class Endpoint:
     def post(self, url, json, headers=None):
         return self.__call(requests.post, url, json=json, headers=headers)
 
+    def put(self, url, json, headers=None):
+        return self.__call(requests.put, url, json=json, headers=headers)
+
     def get(self, url, params=None, headers=None):
         return self.__call(
             requests.get,
@@ -64,3 +67,11 @@ class GetHardwareByTag(Endpoint):
 
     def __call__(self, asset_tag):
         return self.get(self.url.format(asset_tag=asset_tag))
+
+
+class UpdateHardware(Endpoint):
+
+    PATH = 'hardware/{id}'
+
+    def __call__(self, asset_id, payload):
+        return self.put(self.url.format(id=asset_id), json=payload)
