@@ -78,11 +78,14 @@ class SnipeItItemAdmin(ItemAdmin):
             )
         )
 
-        if asset_data['custom_fields']['HW Info']['value']:
+        try:
+            hwinfo = asset_data['custom_fields']['HW Info']['value']
+        except (KeyError, TypeError):
+            hwinfo = None
+
+        if hwinfo:
             hw_info = json.loads(
-                html.unescape(
-                    asset_data['custom_fields']['HW Info']['value']
-                )
+                html.unescape(hwinfo)
             )
             for key, value in hw_info.items():
                 markdown_text += f'- {key}\n'
