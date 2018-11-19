@@ -12,7 +12,7 @@ setup(
     include_package_data=True,
     license='MIT',
     install_requires=[
-        'django>=2.1.0,<2.2',
+        'Django>=2.1.0,<2.2',
         'django-classified',
         'requests==2.20.1',
         'click==7.0'
