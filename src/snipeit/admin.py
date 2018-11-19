@@ -112,10 +112,10 @@ class SnipeItItemAdmin(ItemAdmin):
                 defaults={
                     'user': request.user,
                     'area': Area.objects.get_or_create(
-                        title=asset_data['location']['name']
+                        title=html.unescape(asset_data['location']['name'])
                     )[0],
                     'group': Group.objects.get_or_create(
-                        title=asset_data['category']['name'],
+                        title=html.unescape(asset_data['category']['name']),
                         defaults={
                             'section': section,
                         }
