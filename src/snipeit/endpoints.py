@@ -58,7 +58,19 @@ class ListHardware(Endpoint):
     PATH = 'hardware'
 
     def __call__(self, params=None):
-        return self.get(self.url, params=params)
+        if params is None:
+            params = {}
+        params.setdefault('limit', 50)
+        params.setdefault('offset', 0)
+        data = {'rows': []}
+        while True:
+            response = self.get(self.url, params=params)
+            params['offset'] += params['limit']
+            data['total'] = response['total']
+            data['rows'] += response['rows']
+            if len(data['rows']) >= response['total']:
+                break
+        return data
 
 
 class GetHardwareByTag(Endpoint):
